@@ -1,0 +1,47 @@
+import os
+import numpy as np
+from PIL import Image
+#from tqdm import tqdm
+
+
+def to_dirname(name):
+    if name[-1:] == '/':
+        return name
+    else:
+        return name + '/'
+
+
+def load_image(name, size):
+    image = Image.open(name)
+    image = image.resize((size[0]//2, size[1]//2))
+    image = image.resize(size, Image.NEAREST)
+    image = np.array(image)
+
+    image = image / 255
+
+    image = np.array([image])
+    return image
+
+
+def load_images(name, size, ext='.jpg'):
+    x_images = []
+    y_images = []
+    for file in os.listdir(name):
+        if os.path.splitext(file)[1] != ext:
+            continue
+        image = Image.open(name+file)
+        if image.mode != "RGB":
+            image.convert("RGB")
+        x_image = image.resize((size[0]//2, size[1]//2))
+        x_image = x_image.resize(size, Image.NEAREST)
+        x_image = np.array(x_image)
+        y_image = image.resize(size)
+        y_image = np.array(y_image)
+        x_images.append(x_image)
+        y_images.append(y_image)
+    x_images = np.array(x_images)
+    y_images = np.array(y_images)
+
+    x_images = x_images / 255
+    y_images = y_images / 255
+    return x_images, y_images
